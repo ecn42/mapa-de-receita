@@ -18,8 +18,7 @@ evasao = gerar_relatorio_evasao(assessor)
 
 
 ##Layout da página
-st.title('Dashboard Ceres Capital-2')
-
+st.title('Dashboard Ceres Capital-3')
 st.subheader('Receita Bruta')
 visao_receita_bruta = st.empty()
 
