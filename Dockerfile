@@ -4,7 +4,8 @@ FROM python:3.11
 WORKDIR /app
 COPY . ./
 
-VOLUME ["/app/dir", "/app/dirhist"]
+VOLUME dir-volume /app/dir
+VOLUME dirhist-volume /app/dirhist
 
 RUN pip install -r requirements.txt
 
