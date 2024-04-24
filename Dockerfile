@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8080
 
-CMD streamlit run --server.port 8080 Dash_Ceres_Capital.py
+CMD streamlit run --client.showSidebarNavigation=False --server.port 8080 Dash_Ceres_Capital.py
