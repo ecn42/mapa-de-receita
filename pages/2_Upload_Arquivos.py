@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import shutil
 from datetime import datetime
+import subprocess
 
 def save_uploadedfile(uploadedfile, upload_dir, new_name):
     # Check if the directory already exists
@@ -69,3 +70,18 @@ for key in upload_dirs.keys():
         # If the selected date is not today, save only to the hist directory
         else:
             save_file_to_hist(file, hist_dirs[key], f'{selected_date_str}.xlsx', selected_date)
+
+
+
+def download_volume():
+    # Replace with your actual volume name and desired files/folders
+    subprocess.run(["docker", "cp", "volume_name:/path/inside/volume", "/tmp/data"])
+    subprocess.run(["zip", "-r", "/tmp/data.zip", "/tmp/data"])
+    return "/tmp/data.zip"
+
+download_button = st.download_button(
+    label="Download Volume Data",
+    data=download_volume,
+    file_name="volume_data.zip",
+    mime="application/zip"
+)

@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 ##Configuração da página
-st.set_page_config(page_title='Dashboard Ceres Capital-2', page_icon=':corn:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title='Dashboard Ceres Capital', page_icon=':corn:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 ##Importando os dados com Funções:
 
@@ -18,7 +18,7 @@ evasao = gerar_relatorio_evasao(assessor)
 
 
 ##Layout da página
-st.title('Dashboard RV - Miha')
+st.title('Dashboard Ceres Capital')
 
 st.subheader('Receita Bruta')
 visao_receita_bruta = st.empty()
