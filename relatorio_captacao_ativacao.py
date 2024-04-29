@@ -21,6 +21,7 @@ def gerar_relatorio_captacao(assessor):
     
         ##LIDANDO COM A PLANILHA DO POSITIVADOR
         data_captacao = load_data(captacao)
+        data_posicao_captacao = data_captacao['Data Atualização'].iloc[0]
 
         # Convert 'Data' column to datetime
         data_captacao['Data'] = pd.to_datetime(data_captacao['Data'])
@@ -59,7 +60,7 @@ def gerar_relatorio_captacao(assessor):
         final_data_cpt_assessor['Nome'] = final_data_cpt_assessor.index.get_level_values('Assessor').map(dict_nomes)
         final_data_cpt_assessor = final_data_cpt_assessor[['Nome', 'Captação', 'PF', 'PJ']]
         
-    return final_data_cpt, final_data_cpt_date, final_data_cpt_assessor
+    return final_data_cpt, final_data_cpt_date, final_data_cpt_assessor, data_posicao_captacao
 
 def gerar_relatorio_evasao(assessor):
 

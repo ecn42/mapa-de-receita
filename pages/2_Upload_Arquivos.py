@@ -2,7 +2,6 @@ import streamlit as st
 import os
 import shutil
 from datetime import datetime
-import subprocess
 
 def save_uploadedfile(uploadedfile, upload_dir, new_name):
     # Check if the directory already exists
@@ -58,15 +57,17 @@ selected_date_str = selected_date.strftime("%Y%m%d")
 
 # Check if the selected date is today
 is_today = selected_date == datetime.now().date()
+st.caption('Para atualizar os dashboards atuais, deixar marcado. Para atualizar os dashboards históricos, deixar desmarcado.')
+update_dir = st.checkbox("Atualizar Dashboard", value=True)
 
 # Then in your loop where you call save_file_to_hist, pass the selected_date as an argument
 for key in upload_dirs.keys():
     file = st.file_uploader(f"Upload {key.upper()}", type=['xlsx'])
     if file is not None:
         # If the selected date is today, save to both directories
-        if is_today:
+        if update_dir:
             save_uploadedfile(file, upload_dirs[key], f'{key}.xlsx')
-            save_file_to_hist(file, hist_dirs[key], f'{selected_date_str}.xlsx', selected_date)
+            
         # If the selected date is not today, save only to the hist directory
         else:
             save_file_to_hist(file, hist_dirs[key], f'{selected_date_str}.xlsx', selected_date)

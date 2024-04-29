@@ -25,7 +25,7 @@ if assessor is None:
 else:
 
     ##Importando e lidando com dados apenas se o assessor estiver selecionado
-    final_data, final_data_liq = gerar_relatorio_receita()
+    final_data, final_data_liq, data_posicao_positivador = gerar_relatorio_receita()
     final_data = final_data.loc[assessor]
     ativacao_rf = final_data['Receita RF Bancários'] + final_data['Receita RF Privados'] + final_data['Receita RF Públicos']
     ativacao_rv = final_data['Receita Bovespa'] + final_data['Receita Futuros'] + final_data['Receita Aluguel'] + final_data['Receita Estruturadas']
@@ -70,18 +70,13 @@ else:
             else:
                 st.error(f'Inativo em Renda Variável, faltam R${6500 - ativacao_rv} em receita bruta para ativação.')
 
-            
-            
-
-            
-           
     
 
     
     with captacao_container.container():
         st.header('Captação')
         assessor = int(assessor)
-        captacao, capt_data, capt_ass = gerar_relatorio_captacao(assessor)
+        captacao, capt_data, capt_ass, data_posicao_captacao= gerar_relatorio_captacao(assessor)
         with st.popover('Tabela Captação'):
             st.table(captacao)
         
@@ -90,6 +85,10 @@ else:
         captacao.reset_index(level=0, inplace=True)
         
         # Calculate the cumulative sum of 'Captação'
+        sum_captacao = captacao['Captação'].sum()
+        pf_sum = captacao['PF'].sum()
+        pj_sum = captacao['PJ'].sum()
+
         captacao['Captação_cumsum'] = captacao['Captação'].cumsum()
 
         # Create a plotly graph
@@ -105,13 +104,14 @@ else:
         fig_cap.add_trace(go.Bar(x=captacao.index, y=captacao['PJ'], name='PJ'))
 
         # Update layout for stacked bar chart
-        fig_cap.update_layout(barmode='stack')
-
+        fig_cap.update_layout(
+        title=f'''Captação Líquida/Mês: {sum_captacao:,} 
+        Captação PF/Mês: {pf_sum:,} 
+        Captação PJ/Mês: {pj_sum:,}''', barmode='stack'
+        )
+        
         # Display the plot in Streamlit
         st.plotly_chart(fig_cap, use_container_width=True)
-
-
-
 
         st.subheader('Ativação e Evasão')
         ativacao = gerar_relatorio_evasao(assessor)

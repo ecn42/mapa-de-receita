@@ -25,6 +25,8 @@ def gerar_relatorio_receita():
         
         ##LIDANDO COM A PLANILHA DO POSITIVADOR
         data_positivador = load_data(positivador)
+        # Assuming 'Data Posição' is a datetime column
+        data_posicao_positivador = data_positivador['Data Posição'].iloc[0]
 
         # Group by 'Assessor' column and calculate the sum of 'Receita no Mês' column
         grouped_data_positivador = data_positivador.groupby('Assessor').sum().reset_index()
@@ -144,7 +146,7 @@ def gerar_relatorio_receita():
         final_data_liq = final_data_liq.fillna(0)
         final_data = final_data.fillna(0)
 
-        return final_data, final_data_liq
+        return final_data, final_data_liq, data_posicao_positivador
 
 def gerar_historico_receita(df_positivador, df_compromissadas, df_estruturadas):
     # Define the directory path
