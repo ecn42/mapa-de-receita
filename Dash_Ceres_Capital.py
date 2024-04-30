@@ -3,6 +3,12 @@ from relatorio_receita import gerar_relatorio_receita
 from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao
 import plotly.express as px
 import plotly.graph_objects as go
+import json
+
+with open('dict_nomes.json', 'r') as f:
+    dict_nomes = json.load(f)
+list_of_names = sorted(dict_nomes.values())
+reverse_dict = {v: k for k, v in dict_nomes.items()}
 
 ##Configuração da página
 st.set_page_config(page_title='Dashboard Ceres Capital', page_icon=':corn:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
@@ -19,6 +25,21 @@ proj_liq_assessor = final_data_liq_total
 
 ##Layout da página
 st.title('Dashboard Ceres Capital')
+
+col1_menu, col2_menu = st.columns(2)
+with col1_menu:
+    menu = st.selectbox('Navegar para:', ['Upload'], index = None)
+    if menu == 'Upload':
+        st.switch_page('pages/2_Upload_Arquivos.py')
+
+with col2_menu:
+    selecao_assessor = st.selectbox('Ir para Página de Assessor:', list_of_names, index = None)
+    
+    if selecao_assessor is not None:
+        codigo_assessor_selecionado = reverse_dict[selecao_assessor]
+        st.page_link(f'https://mapa-de-receita-5h2jcogpdq-uc.a.run.app/P%C3%A1gina_Assessor?assessor={codigo_assessor_selecionado}', label= 'Ir para Assessor selecionado')
+
+
 st.write(f'Data de Atualização do Positivador: {data_posicao_positivador}')
 st.subheader('Receita Bruta XP')
 visao_receita_bruta = st.empty()
