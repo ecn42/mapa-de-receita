@@ -109,3 +109,33 @@ def gerar_relatorio_evasao(assessor):
             final_data_atv = final_data_atv.loc[final_data_atv.index == assessor]
 
         return final_data_atv
+    
+def gerar_tabela_evasao(assessor):
+
+    if ativacao is not None:
+        
+        ##LIDANDO COM A PLANILHA DO POSITIVADOR
+        data_ativacao = load_data(ativacao)
+        data_ativacao['Ativou em M?'] = data_ativacao['Ativou em M?'].apply(lambda x: 1 if x == 'Sim' else 0)
+        data_ativacao['Evadiu em M?'] = data_ativacao['Evadiu em M?'].apply(lambda x: 1 if x == 'Sim' else 0)    
+        data_ativacao = data_ativacao[(data_ativacao['Ativou em M?'] == 1) | (data_ativacao['Evadiu em M?'] == 1)]
+        # Group by 'Assessor' column and calculate the sum of 'Receita no Mês' column 
+        data_ativacao = data_ativacao[['Assessor', 'Cliente', 'Ativou em M?', 'Evadiu em M?', 'Tipo Pessoa']]
+
+        # Merge the grouped data and pivot table
+        final_data_ativacao = data_ativacao
+    
+        final_data_atv = final_data_ativacao
+
+        final_data_atv['Assessor'] = final_data_atv['Assessor'].astype(str)
+        final_data_atv.set_index('Assessor', inplace=True)
+
+        final_data_atv['Nome'] = final_data_atv.index.map(dict_nomes)
+       
+
+        # return final_data, final_data_liq
+        if assessor is not None:
+            assessor = str(assessor)
+            final_data_atv = final_data_atv.loc[final_data_atv.index == assessor]
+
+        return final_data_atv

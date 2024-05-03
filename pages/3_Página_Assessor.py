@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from relatorio_receita import gerar_relatorio_receita
 from relatorio_historico_receita import gerar_historico_receita_assessor, get_directories, get_files
-from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao
+from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao, gerar_tabela_evasao
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -115,6 +115,7 @@ else:
 
         st.subheader('Ativação e Evasão')
         ativacao = gerar_relatorio_evasao(assessor)
-        # with st.popover('Detalhes'):
-        #     # st.dataframe(data_ativacao_bruta)
+        data_ativacao_bruta = gerar_tabela_evasao(assessor)
+        with st.popover('Detalhes'):
+            st.dataframe(data_ativacao_bruta)
         st.table(ativacao)
