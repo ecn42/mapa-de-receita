@@ -68,9 +68,12 @@ def gerar_relatorio_evasao(assessor):
         
         ##LIDANDO COM A PLANILHA DO POSITIVADOR
         data_ativacao = load_data(ativacao)
-
+        data_ativacao_bruta = data_ativacao.copy()
         data_ativacao['Ativou em M?'] = data_ativacao['Ativou em M?'].apply(lambda x: 1 if x == 'Sim' else 0)
         data_ativacao['Evadiu em M?'] = data_ativacao['Evadiu em M?'].apply(lambda x: 1 if x == 'Sim' else 0)    
+
+        
+
         # Group by 'Assessor' column and calculate the sum of 'Receita no Mês' column
         grouped_data_ativacao = data_ativacao.groupby('Assessor').sum().reset_index().round(0)
         grouped_data_ativacao = grouped_data_ativacao[['Assessor', 'Ativou em M?', 'Evadiu em M?']]

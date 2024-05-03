@@ -15,13 +15,13 @@ st.set_page_config(page_title='Dashboard Ceres Capital', page_icon=':corn:' , la
 
 ##Importando os dados com Funções:
 
-final_data, final_data_liq, data_posicao_positivador = gerar_relatorio_receita()
+final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita()
 final_data_total = final_data.drop(columns=['Nome']).sum().round(0)
 final_data_liq_total = final_data_liq.drop(columns=['Nome']).sum().round(0)
+final_data_liq_esc_total = final_data_liq_esc.drop(columns=['Nome']).sum().round(0)
 assessor = None
 captacao, captacao_data, captacao_assessor, data_posicao_captacao = gerar_relatorio_captacao(assessor)
 evasao = gerar_relatorio_evasao(assessor)
-proj_liq_assessor = final_data_liq_total
 
 ##Layout da página
 st.title('Dashboard Ceres Capital')
@@ -141,7 +141,7 @@ with visao_captacao.container():
 
     # Update layout
     fig_cap_total.update_layout(
-        title=f'''Captação Líquida/Mês: {sum_captacao:,}W 
+        title=f'''Captação Líquida/Mês: {sum_captacao:,} 
         Captação PF/Mês: {pf_sum:,} 
         Captação PJ/Mês: {pj_sum:,}''',  # set title as the sum of 'Captação'
         barmode='stack',  # for stacked bar chart
@@ -174,13 +174,8 @@ with visao_captacao.container():
 
 
 with visao_receita_liquida_escritório.container():
-    final_data_liq_esc = final_data_liq
-    final_data_liq_esc_total = final_data_liq_total
-    
 
-    numeric_columns = final_data_liq_esc.select_dtypes(include='number').columns
-    final_data_liq_esc[numeric_columns] *= 2
-    final_data_liq_esc_total *= 2
+    
 
     with st.expander('Tabelas'):
         
@@ -211,19 +206,19 @@ with projecoes_mes.container():
     
     
     with col_proj_1:
-        dias_form = st.form(key='my_form')
+        dias_form = st.form(key='dias_formulario')
         dias_uteis = dias_form.number_input('Número de dias passados')
         total_mes = dias_form.number_input('Dias úteis totais no mês atual')
         confirmar_dias = dias_form.form_submit_button(label = 'Atualizar')
     
     daily_average_total = final_data_total / dias_uteis
     daily_average_liq_esc_total = final_data_liq_esc_total/ dias_uteis
-    daily_average_assessor = proj_liq_assessor / dias_uteis 
+    daily_average_assessor = final_data_liq_total / dias_uteis 
 
     # Calculate projected totals for the month (assuming 30 days)
     total_for_month_total = daily_average_total * total_mes
     total_for_month_liq_esc_total = daily_average_liq_esc_total * total_mes 
-    month_assessor = daily_average_assessor *total_mes / 2
+    month_assessor = daily_average_assessor * total_mes
 
     # Print or use the projected totals as needed
     

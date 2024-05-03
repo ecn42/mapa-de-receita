@@ -25,7 +25,7 @@ if assessor is None:
 else:
 
     ##Importando e lidando com dados apenas se o assessor estiver selecionado
-    final_data, final_data_liq, data_posicao_positivador = gerar_relatorio_receita()
+    final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita()
     final_data = final_data.loc[assessor]
     ativacao_rf = final_data['Receita RF Bancários'] + final_data['Receita RF Privados'] + final_data['Receita RF Públicos']
     ativacao_rv = final_data['Receita Bovespa'] + final_data['Receita Futuros'] + final_data['Receita Aluguel'] + final_data['Receita Estruturadas']
@@ -44,7 +44,7 @@ else:
 
         # Create a dropdown menu for the YYYYMM directories
         with col2_comissao:
-            st.title(f'Evolução da receita')
+            st.title(f'Evolução da receita - AJUSTAR AQUI')
             # Get the directories in the selected directory
             dirs = get_directories(hist_dirs['positivador'])  # Assuming all directories have the same dates
             data = st.selectbox('Select a date', dirs, index =len(dirs)-1)
@@ -76,7 +76,7 @@ else:
     with captacao_container.container():
         st.header('Captação')
         assessor = int(assessor)
-        captacao, capt_data, capt_ass, data_posicao_captacao= gerar_relatorio_captacao(assessor)
+        captacao, capt_data, capt_ass, data_posicao_captacao = gerar_relatorio_captacao(assessor)
         with st.popover('Tabela Captação'):
             st.table(captacao)
         
@@ -109,11 +109,12 @@ else:
         Captação PF/Mês: {pf_sum:,} 
         Captação PJ/Mês: {pj_sum:,}''', barmode='stack'
         )
-        
+     
         # Display the plot in Streamlit
         st.plotly_chart(fig_cap, use_container_width=True)
 
         st.subheader('Ativação e Evasão')
         ativacao = gerar_relatorio_evasao(assessor)
-
+        # with st.popover('Detalhes'):
+        #     # st.dataframe(data_ativacao_bruta)
         st.table(ativacao)

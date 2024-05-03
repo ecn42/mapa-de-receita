@@ -5,11 +5,17 @@ import os
 with open('dict_nomes.json', 'r') as f:
     dict_nomes = json.load(f)
 
+with open('dict_repasse.json', 'r') as w:
+    dict_repasse = json.load(w)
+
 def load_data(uploaded_file):
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
         return df
     return None
+
+def multiply_by_dict(row, dict_repasse):
+    return row * dict_repasse[row.name]
 
 def gerar_relatorio_receita():
     positivador = 'dir/positivador/positivador.xlsx'
@@ -132,21 +138,43 @@ def gerar_relatorio_receita():
         colunas_multiplicar_repasse_50 = ['Receita no Mês', 'Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita PF', 'Receita PJ', 'Receita Compromissadas']
         colunas_multiplicar_repasse_100 = ['Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']
         final_data_liq = final_data.copy()
-        final_data_liq[colunas_multiplicar_repasse_50] = final_data_liq[colunas_multiplicar_repasse_50].apply(lambda x: x * 0.171)
-        final_data_liq[colunas_multiplicar_repasse_100] = final_data_liq[colunas_multiplicar_repasse_100].apply(lambda x: x * 0.36)
+        final_data_liq_esc = final_data.copy()
+
+        ##Visão Bruto XP
+        multiplicador_imposto_xp = (1-0.05)
+        ##Visão Bruto Escritório
+        multiplicador_repasse_xp_50 = (1-0.5)
+        multiplicador_repasse_xp_100 = 1
+        multiplicador_ir = (1-0.2)
+        ##Visão Liquido Escritório
+        multiplicador_mesa = (1-0.1)
         
+        final_data_liq_esc[colunas_multiplicar_repasse_50] = final_data_liq_esc[colunas_multiplicar_repasse_50].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_50 * multiplicador_ir)
+        final_data_liq_esc[colunas_multiplicar_repasse_100] = final_data_liq_esc[colunas_multiplicar_repasse_100].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_100 * multiplicador_ir)
+        final_data_liq_esc['Comissão Total Líquida'] = final_data_liq_esc[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']].sum(axis=1)
+
+
+
+        final_data_liq[colunas_multiplicar_repasse_50] = final_data_liq[colunas_multiplicar_repasse_50].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_50 * multiplicador_ir * multiplicador_mesa)
+        final_data_liq[colunas_multiplicar_repasse_100] = final_data_liq[colunas_multiplicar_repasse_100].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_100 * multiplicador_ir * multiplicador_mesa)
         final_data_liq['Comissão Total Líquida'] = final_data_liq[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']].sum(axis=1)
+        final_data_liq = final_data_liq.apply(multiply_by_dict, args=(dict_repasse,), axis=1)
+
         final_data['Comissão Total Bruta'] = final_data[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']].sum(axis=1)
 
         final_data['Nome'] = final_data.index.map(dict_nomes)
         final_data_liq['Nome'] = final_data_liq.index.map(dict_nomes) 
+        final_data_liq_esc['Nome'] = final_data_liq_esc.index.map(dict_nomes) 
 
+
+        final_data_liq_esc = final_data_liq_esc[['Nome', 'Comissão Total Líquida', 'Receita no Mês', 'Receita PF', 'Receita PJ', 'Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']]
         final_data_liq = final_data_liq[['Nome', 'Comissão Total Líquida', 'Receita no Mês', 'Receita PF', 'Receita PJ', 'Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']]
         final_data = final_data[['Nome', 'Comissão Total Bruta', 'Receita no Mês', 'Receita PF', 'Receita PJ', 'Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']]
         final_data_liq = final_data_liq.fillna(0)
         final_data = final_data.fillna(0)
+        final_data_liq_esc = final_data_liq_esc.fillna(0)
 
-        return final_data, final_data_liq, data_posicao_positivador
+        return final_data, final_data_liq,data_posicao_positivador, final_data_liq_esc
 
 def gerar_historico_receita(df_positivador, df_compromissadas, df_estruturadas):
     # Define the directory path
