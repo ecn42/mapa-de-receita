@@ -1,6 +1,6 @@
 import streamlit as st
 from relatorio_receita import gerar_relatorio_receita
-from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao
+from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao, gerar_tabela_evasao
 import plotly.express as px
 import plotly.graph_objects as go
 import json
@@ -28,9 +28,11 @@ st.title('Dashboard Ceres Capital')
 
 col1_menu, col2_menu = st.columns(2)
 with col1_menu:
-    menu = st.selectbox('Navegar para:', ['Upload'], index = None)
+    menu = st.selectbox('Navegar para:', ['Upload', 'Asset Allocation'], index = None)
     if menu == 'Upload':
         st.switch_page('pages/2_Upload_Arquivos.py')
+    if menu == 'Asset Allocation':
+        st.switch_page('pages/4_Carteira.py')
 
 with col2_menu:
     selecao_assessor = st.selectbox('Ir para Página de Assessor:', list_of_names, index = None)
@@ -118,6 +120,7 @@ with visao_captacao.container():
     with col_cap_4:
         st.caption('Ativação/Evasão Total por Assessor')
         st.dataframe(evasao)
+
 
     
 

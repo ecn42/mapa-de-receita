@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title='Asset Allocation', page_icon=':graph:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title='Asset Allocation', page_icon=':chart_with_upwards_trend:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
 # Load the data
-df = pd.read_excel('aa/data.xlsx')
+df = pd.read_excel('assetallocation/data.xlsx')
 col1, col2 = st.columns(2)
 # Get the unique profiles
 profiles = df['Perfil'].unique()
@@ -26,7 +26,7 @@ with col1:
     st.plotly_chart(fig)
 
 # Load the suggestions data from 'ativos.xlsx'
-df_suggestions = pd.read_excel('aa/ativos.xlsx')
+df_suggestions = pd.read_excel('assetallocation/ativos.xlsx')
 
 # Filter the suggestions data based on the selected profile
 df_suggestions = df_suggestions[df_suggestions['Perfil'] == selected_profile]
@@ -41,8 +41,9 @@ with col2:
         df_to_display = df_suggestions[df_suggestions['Carteira'] == carteiras[i]]
         df_to_display = df_to_display.iloc[:, :-2]  # Drop the last column
 
-        # Check if 'Lâmina' column exists in the dataframe
-        if 'Lâmina' in df_to_display.columns:
-            # Convert the 'Lâmina' column to markdown links
-            df_to_display['Lâmina'] = df_to_display['Lâmina'].apply(lambda x: f'Link' if pd.notnull(x) else "")
-        st.dataframe(df_to_display, hide_index=True)
+    
+        st.dataframe(df_to_display, hide_index=True, column_config={
+            'Link': st.column_config.LinkColumn(
+            "Link", display_text="Acessar"
+            )
+        })
