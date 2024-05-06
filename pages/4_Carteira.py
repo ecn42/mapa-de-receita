@@ -4,7 +4,7 @@ import plotly.express as px
 
 st.set_page_config(page_title='Asset Allocation', page_icon=':chart_with_upwards_trend:' , layout="wide", initial_sidebar_state="auto", menu_items=None)
 # Load the data
-df = pd.read_excel('assetallocation/data.xlsx')
+df = pd.read_excel('assetallocation/data/data.xlsx')
 col1, col2 = st.columns(2)
 # Get the unique profiles
 profiles = df['Perfil'].unique()
@@ -26,7 +26,7 @@ with col1:
     st.plotly_chart(fig)
 
 # Load the suggestions data from 'ativos.xlsx'
-df_suggestions = pd.read_excel('assetallocation/ativos.xlsx')
+df_suggestions = pd.read_excel('assetallocation/ativos/ativos.xlsx')
 
 # Filter the suggestions data based on the selected profile
 df_suggestions = df_suggestions[df_suggestions['Perfil'] == selected_profile]

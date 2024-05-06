@@ -72,4 +72,14 @@ for key in upload_dirs.keys():
         else:
             save_file_to_hist(file, hist_dirs[key], f'{selected_date_str}.xlsx', selected_date)
 
+st.divider()
 
+st.header('Arquivos Asset Allocation')
+
+data_assetallocation = st.file_uploader(f'Upload Arquivo "Data"')
+if data_assetallocation is not None:
+    save_uploadedfile(data_assetallocation, 'assetallocation/data', 'data.xlsx')
+
+ativos_assetallocation = st.file_uploader(f'Upload Arquivo "Ativos"')
+if ativos_assetallocation is not None:
+    save_uploadedfile(ativos_assetallocation, 'assetallocation/ativos', 'ativos.xlsx')
