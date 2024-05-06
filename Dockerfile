@@ -6,7 +6,7 @@ COPY . ./
 
 VOLUME dir-volume /app/dir
 VOLUME dirhist-volume /app/dirhist
-VOLUME assetallocation-volume /app/assetallocation
+VOLUME assetallocation app/assetallocation
 
 RUN pip install -r requirements.txt
 
