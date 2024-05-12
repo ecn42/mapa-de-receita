@@ -83,3 +83,31 @@ if data_assetallocation is not None:
 ativos_assetallocation = st.file_uploader(f'Upload Arquivo "Ativos"')
 if ativos_assetallocation is not None:
     save_uploadedfile(ativos_assetallocation, 'assetallocation/ativos', 'ativos.xlsx')
+
+
+st.divider()
+
+st.header('Arquivos Histórico de Comissões Realizadas')
+data_comissao = st.selectbox('Mês', ['202401','202402','202403','202404', '202405', '202406'], placeholder='Selecione um mês para upload')
+
+gerencial_comissoes = st.file_uploader(f'Upload Arquivo "Gerencial"')
+if gerencial_comissoes is not None:
+    save_uploadedfile(gerencial_comissoes, f'historicocomissoes/{data_comissao}/gerencial', 'gerencial.xlsx')
+
+cambio_comissoes = st.file_uploader(f'Upload Arquivo "Cambio"')
+if cambio_comissoes is not None:
+    save_uploadedfile(cambio_comissoes, f'historicocomissoes/{data_comissao}/cambio', 'cambio.xlsx')
+
+credito_comissoes = st.file_uploader(f'Upload Arquivo "credito"')
+if credito_comissoes is not None:
+    save_uploadedfile(credito_comissoes, f'historicocomissoes/{data_comissao}/credito', 'credito.xlsx')
+
+xpcs_comissoes = st.file_uploader(f'Upload Arquivo "xpcs"')
+if xpcs_comissoes is not None:
+    save_uploadedfile(xpcs_comissoes, f'historicocomissoes/{data_comissao}/xpcs', 'xpcs.xlsx')
+    
+xpvp_comissoes = st.file_uploader(f'Upload Arquivo "xpvp"')
+if xpvp_comissoes is not None:
+    save_uploadedfile(xpvp_comissoes, f'historicocomissoes/{data_comissao}/xpvp', 'xpvp.xlsx')
+
+

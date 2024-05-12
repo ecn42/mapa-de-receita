@@ -6,6 +6,10 @@ import json
 with open('dict_nomes.json', 'r') as f:
     dict_nomes = json.load(f)
 
+
+with open('dict_repasse.json', 'r') as w:
+    dict_repasse = json.load(w)
+
 assessor = st.query_params.get('assessor')
 
 # Your directories
@@ -69,9 +73,29 @@ def gerar_historico_receita(df_positivador, df_compromissadas, df_estruturadas):
         
         final_data.set_index('Assessor', inplace=True)
 
+
+
+
         colunas_multiplicar_repasse_50 = ['Receita no Mês', 'Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita PF', 'Receita PJ', 'Receita Compromissadas']
+      
         final_data_liq = final_data.copy()
-        final_data_liq[colunas_multiplicar_repasse_50] = final_data_liq[colunas_multiplicar_repasse_50].apply(lambda x: x * 0.171)
+        final_data_liq_esc = final_data.copy()
+
+        ##Visão Bruto XP
+        multiplicador_imposto_xp = (1-0.05)
+        ##Visão Bruto Escritório
+        multiplicador_repasse_xp_50 = (1-0.5)
+        multiplicador_repasse_xp_100 = 1
+        multiplicador_ir = (1-0.2)
+        ##Visão Liquido Escritório
+        multiplicador_mesa = (1-0.1)
+        
+        final_data_liq_esc[colunas_multiplicar_repasse_50] = final_data_liq_esc[colunas_multiplicar_repasse_50].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_50 * multiplicador_ir)
+        # final_data_liq_esc[colunas_multiplicar_repasse_100] = final_data_liq_esc[colunas_multiplicar_repasse_100].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_100 * multiplicador_ir)
+        final_data_liq_esc['Comissão Total Líquida'] = final_data_liq_esc[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas']].sum(axis=1)
+
+        
+        final_data_liq[colunas_multiplicar_repasse_50] = final_data_liq[colunas_multiplicar_repasse_50].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_50 * multiplicador_ir* multiplicador_mesa)
         
         final_data_liq['Comissão Total Líquida'] = final_data_liq[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas']].sum(axis=1)
         final_data['Comissão Total Bruta'] = final_data[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas']].sum(axis=1)

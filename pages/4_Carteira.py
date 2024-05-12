@@ -23,7 +23,7 @@ with col1:
     # Create a pie chart with plotly
     fig = px.pie(df_grouped, values='Alocação', names='Ativo', title='Asset Allocation sugerida para perfil ' + selected_profile)
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True)
 
 # Load the suggestions data from 'ativos.xlsx'
 df_suggestions = pd.read_excel('assetallocation/ativos/ativos.xlsx')
