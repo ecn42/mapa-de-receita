@@ -128,10 +128,6 @@ else:
         comissoes = comissoes.loc[assessor]
         comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.xs(assessor, level=1)
 
-
-        st.dataframe(comissoes)
-        st.dataframe(comissoes_agrupadas_assessor)
-
         st.header('Histórico de Relatório de Comissões')
         comissoes['Líquido Escritório'] = comissoes['Comissão Escritório Líquida'] - comissoes['Comissão Assessor'] 
         
