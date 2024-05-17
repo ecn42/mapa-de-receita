@@ -24,7 +24,8 @@ def gerar_relatorio_captacao(assessor):
         data_posicao_captacao = data_captacao['Data Atualização'].iloc[0]
 
         # Convert 'Data' column to datetime
-        data_captacao['Data'] = pd.to_datetime(data_captacao['Data'])
+        data_captacao['Data'] = pd.to_datetime(data_captacao['Data'], format='%d/%m/%Y')
+
 
         # Filter data_captacao to only include rows where 'Assessor' is equal to the variable assessor
         if assessor is not None:
