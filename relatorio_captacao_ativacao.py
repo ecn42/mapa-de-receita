@@ -29,7 +29,11 @@ def gerar_relatorio_captacao(assessor):
 
         # Filter data_captacao to only include rows where 'Assessor' is equal to the variable assessor
         if assessor is not None:
+            
+            
+    
             data_captacao = data_captacao[data_captacao['Assessor'] == assessor]
+
 
         # Group by 'Assessor' and 'Data' columns and calculate the sum of 'Captação' column
         grouped_data_captacao = data_captacao.groupby(['Assessor', 'Data']).sum().reset_index().round(0)

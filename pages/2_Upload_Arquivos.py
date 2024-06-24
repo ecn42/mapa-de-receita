@@ -6,7 +6,7 @@ from datetime import datetime
 def save_uploadedfile(uploadedfile, upload_dir, new_name):
     # Check if the directory already exists
     if os.path.exists(upload_dir):
-        # If it does, delete it
+        # If it does, delaete it
         shutil.rmtree(upload_dir)
     # Create the directory
     os.makedirs(upload_dir)

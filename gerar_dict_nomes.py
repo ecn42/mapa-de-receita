@@ -7,10 +7,10 @@ dict_nomes = {'70998' : 'Letícia(F)',
               '72673' : 'Sandra',
               '72763' : 'Vitor',
               '36405' : 'Vinícius Farisi(F)',
-              '36624' : 'Vinícius Gregório',
+              '36624' : 'Vinícius Gregório(F)',
               '69861' : 'Rodrigo',
               '' : 'Ana Cristina',
-              '20207' : 'Alexandre',
+              '20207' : 'Alexandre(F)',
               '47187' : 'Andre',
               '72495' : 'Flavia',
               '22579' : 'Priscila',
@@ -35,10 +35,10 @@ dict_repasse = {'70998' : 0.5, #'Letícia(F)'
               '72673' : 0.5, #'Sandra'
               '72763' : 0.5, #'Vitor'
               '36405' : 0.5, #'Vinícius Farisi(F)'
-              '36624' : 0.5, #'Vinícius Gregório'
+              '36624' : 0.5, #'Vinícius Gregório(F)'
               '69861' : 0.5, #'Rodrigo'
               '' : 0.5, #'Ana Cristina'
-              '20207' : 0.5, #'Alexandre'
+              '20207' : 0.5, #'Alexandre(F)'
               '47187' : 0.5, #'Andre'
               '72495' : 0.5, #'Flavia'
               '22579' : 0.5, #'Priscila'
