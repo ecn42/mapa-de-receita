@@ -178,6 +178,7 @@ def gerar_historico_receita_assessor(dir_date_choice, assessor):
                         final_data_person_liq = pd.concat([final_data_person_liq, temp_final_data_liq])
 
                     nome = final_data_person['Nome'].iloc[0]
+                    
 
         final_data_person = final_data_person.drop(columns=['Nome'])
         final_data_person_liq = final_data_person_liq.drop(columns=['Nome'])

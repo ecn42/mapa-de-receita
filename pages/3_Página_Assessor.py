@@ -40,25 +40,28 @@ else:
         with col1_comissao:
             st.title(f'Simulador de Comissão - {assessor}')
             st.subheader('Comissão Líquida')
+            st.caption(f'Data de Atualização: {data_posicao_positivador}')
             st.caption('Bovespa, RF, Estruturadas e Compromissadas são estimativas com base nos dados do positivador e HUB. Dados de XPCS, XPVP, Fundos e Fee Fixo são baseados no mês anterior')
             st.table(final_data_liq)
 
         # Create a dropdown menu for the YYYYMM directories
         with col2_comissao:
-            st.title(f'Evolução da receita -Estimativa')
-            # Get the directories in the selected directory
-            dirs = get_directories(hist_dirs['positivador'])  # Assuming all directories have the same dates
-            data = st.selectbox('Select a date', dirs, index =len(dirs)-1)
-            final_data_person, final_data_person_liq = gerar_historico_receita_assessor(data, assessor)
             
+            st.title(f'Indicadores de ativação')
+            # # Get the directories in the selected directory
+            # dirs = get_directories(hist_dirs['positivador'])  # Assuming all directories have the same dates
+            # data = st.selectbox('Select a date', dirs, index =len(dirs)-1)
+            # final_data_person, final_data_person_liq = gerar_historico_receita_assessor(data, assessor)
+            # st.table(final_data_person)
+            # st.table(final_data_person_liq)
+            # # Create a Plotly figure
 
-            # Create a Plotly figure
+            # fig_ev_rec = px.line(final_data_person_liq, x=final_data_person_liq.index, y='Comissão Total Líquida', title='Evolução da Comissão Líquida')
 
-            fig_ev_rec = px.line(final_data_person_liq, x=final_data_person_liq.index, y='Comissão Total Líquida', title='Evolução da Comissão Líquida')
-
-            # Display the figure with streamlit
-            st.plotly_chart(fig_ev_rec)
-            
+            # # Display the figure with streamlit
+            # st.plotly_chart(fig_ev_rec)
+            ativacao_rf = ativacao_rf.round(0)
+            ativacao_rv = ativacao_rv.round(0)
             st.caption('Meta para Ativação em Renda Fixa: Receita Bruta acima de R$4.500')
             if ativacao_rf > 4500:
                 st.success('Ativo em Renda Fixa (Receita Bruta Acima de R$4.500)')
