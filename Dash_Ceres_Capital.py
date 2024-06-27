@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import json
 from relatorio_comissoes import gerar_historico_comissao
 import pandas as pd
+import datetime
 
 with open('dict_nomes.json', 'r') as f:
     dict_nomes = json.load(f)
@@ -17,7 +18,21 @@ st.set_page_config(page_title='Dashboard Ceres Capital', page_icon=':corn:' , la
 
 ##Importando os dados com Funções:
 
-final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita()
+##FAZENDO A SELEÇÃO DE DATAS FUNCIONAR
+
+filtro_de_data = None
+caminho_positivador = 'dir/positivador/positivador.xlsx'
+positivador_antigo = pd.read_excel(caminho_positivador)
+lista_data_posicao = positivador_antigo['Data Posição'].unique().tolist()
+index_lista = len(lista_data_posicao) - 1
+
+filtro_de_data = st.selectbox('Data do Positivador', lista_data_posicao, index = index_lista)
+
+
+final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita(filtro_de_data)
+data_posicao_positivador = filtro_de_data
+####
+
 final_data_total = final_data.drop(columns=['Nome']).sum().round(0)
 final_data_liq_total = final_data_liq.drop(columns=['Nome']).sum().round(0)
 final_data_liq_esc_total = final_data_liq_esc.drop(columns=['Nome']).sum().round(0)

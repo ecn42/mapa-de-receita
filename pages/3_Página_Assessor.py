@@ -6,9 +6,11 @@ from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatori
 import plotly.express as px
 import plotly.graph_objects as go
 from relatorio_comissoes import gerar_historico_comissao
+import datetime
 
 st.set_page_config(page_title='Assessor Ceres Capital', page_icon=':rocket:' , layout="wide", initial_sidebar_state='auto', menu_items=None)
 
+selecao_de_datas = st.empty()
 comissao = st.empty()
 captacao_container = st.empty()
 comissoes_historico = st.empty()
@@ -26,7 +28,22 @@ if assessor is None:
 else:
 
     ##Importando e lidando com dados apenas se o assessor estiver selecionado
-    final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita()
+
+    with selecao_de_datas.container():    
+        ##FAZENDO A SELEÇÃO DE DATAS FUNCIONAR
+
+        filtro_de_data = None
+        caminho_positivador = 'dir/positivador/positivador.xlsx'
+        positivador_antigo = pd.read_excel(caminho_positivador)
+        lista_data_posicao = positivador_antigo['Data Posição'].unique().tolist()
+        index_lista = len(lista_data_posicao) - 1
+
+        filtro_de_data = st.selectbox('Data do Positivador', lista_data_posicao, index = index_lista)
+
+        final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita(filtro_de_data)
+        data_posicao_positivador = filtro_de_data
+        ####
+
     final_data = final_data.loc[assessor]
     ativacao_rf = final_data['Receita RF Bancários'] + final_data['Receita RF Privados'] + final_data['Receita RF Públicos']
     ativacao_rv = final_data['Receita Bovespa'] + final_data['Receita Futuros'] + final_data['Receita Aluguel'] + final_data['Receita Estruturadas']

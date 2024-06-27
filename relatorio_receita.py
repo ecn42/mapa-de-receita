@@ -8,6 +8,9 @@ with open('dict_nomes.json', 'r') as f:
 with open('dict_repasse.json', 'r') as w:
     dict_repasse = json.load(w)
 
+with open('dict_repasse_p2.json', 'r') as f:
+    dict_repasse_p2 = json.load(f)
+
 def load_data(uploaded_file):
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
@@ -17,7 +20,7 @@ def load_data(uploaded_file):
 def multiply_by_dict(row, dict_repasse):
     return row * dict_repasse[row.name]
 
-def gerar_relatorio_receita():
+def gerar_relatorio_receita(filtro_de_data):
     positivador = 'dir/positivador/positivador.xlsx'
     compromissadas = 'dir/compromissadas/compromissadas.xlsx'
     estruturadas = 'dir/estruturadas/estruturadas.xlsx'
@@ -32,7 +35,12 @@ def gerar_relatorio_receita():
         ##LIDANDO COM A PLANILHA DO POSITIVADOR
         data_positivador = load_data(positivador)
         # Assuming 'Data Posição' is a datetime column
-        data_posicao_positivador = data_positivador['Data Posição'].iloc[0]
+        data_posicao_positivador = data_positivador['Data Posição'].iloc[-1]
+        
+        
+        if filtro_de_data is not None:
+            data_positivador = data_positivador[data_positivador['Data Posição'] == filtro_de_data]
+
 
         # Group by 'Assessor' column and calculate the sum of 'Receita no Mês' column
         grouped_data_positivador = data_positivador.groupby('Assessor').sum().reset_index()
@@ -54,9 +62,11 @@ def gerar_relatorio_receita():
 
         data_compromissadas = load_data(compromissadas)
 
+        if filtro_de_data is not None:
+            data_compromissadas = data_compromissadas[data_compromissadas['Data Posição'] == filtro_de_data]
+
         # Drop the first character in the 'Código' column
-        data_compromissadas['Código'] = data_compromissadas['Código'].str[1:]
-        data_compromissadas = data_compromissadas.drop(data_compromissadas.tail(3).index)
+        
         # Assuming data_estruturadas is your DataFrame
         
 
@@ -64,9 +74,9 @@ def gerar_relatorio_receita():
         ##LIDANDO COM OS DADOS DAS ESTRUTURADAS
         data_estruturadas = load_data(estruturadas)
 
-        data_estruturadas['Cod A'] = data_estruturadas['Cod A'].str[1:]
-        data_estruturadas = data_estruturadas.drop(data_estruturadas.tail(3).index)
-        data_estruturadas = data_estruturadas[data_estruturadas['Status da Operação'] != 'Cancelado']
+        if filtro_de_data is not None:
+            data_estruturadas = data_estruturadas[data_estruturadas['Data Posição'] == filtro_de_data]
+        
         data_estruturadas = data_estruturadas.groupby('Cod A')['Comissão'].sum().reset_index()
         
 
@@ -157,9 +167,14 @@ def gerar_relatorio_receita():
 
         final_data_liq[colunas_multiplicar_repasse_50] = final_data_liq[colunas_multiplicar_repasse_50].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_50 * multiplicador_ir * multiplicador_mesa)
         final_data_liq[colunas_multiplicar_repasse_100] = final_data_liq[colunas_multiplicar_repasse_100].apply(lambda x: x * multiplicador_imposto_xp * multiplicador_repasse_xp_100 * multiplicador_ir * multiplicador_mesa)
+        
+        
+        colunas_repasse_p1 = ['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários',  'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão Fundos', 'Comissão Fee Fixo']
+        colunas_repasse_p2 = ['Comissão XPCS', 'Comissão XPVP']
+        final_data_liq[colunas_repasse_p1] = final_data_liq[colunas_repasse_p1].apply(multiply_by_dict, args=(dict_repasse,), axis=1)
+        final_data_liq[colunas_repasse_p2] = final_data_liq[colunas_repasse_p2].apply(multiply_by_dict, args=(dict_repasse_p2,), axis=1)
         final_data_liq['Comissão Total Líquida'] = final_data_liq[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']].sum(axis=1)
-        final_data_liq = final_data_liq.apply(multiply_by_dict, args=(dict_repasse,), axis=1)
-
+        
         final_data['Comissão Total Bruta'] = final_data[['Receita Bovespa', 'Receita Futuros', 'Receita RF Bancários', 'Receita RF Privados', 'Receita RF Públicos','Receita Aluguel', 'Receita Compromissadas', 'Receita Estruturadas', 'Comissão XPCS', 'Comissão XPVP', 'Comissão Fundos', 'Comissão Fee Fixo']].sum(axis=1)
 
         final_data['Nome'] = final_data.index.map(dict_nomes)
