@@ -59,6 +59,8 @@ with col1:
     ###upload e check do positivador
     positivador = st.file_uploader(f'Upload Arquivo Positivador')
     caminho_positivador = 'dir/positivador/positivador.xlsx'
+    caminho_compromissadas = 'dir/compromissadas/compromissadas.xlsx'
+    caminho_estruturadas = 'dir/estruturadas/estruturadas.xlsx'
     positivador_antigo = pd.read_excel(caminho_positivador)
 
     if positivador is not None:
@@ -68,7 +70,7 @@ with col1:
             positivador_concat = pd.concat([positivador_antigo, positivador], axis=0)
             
             compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
-            caminho_compromissadas = 'dir/compromissadas/compromissadas.xlsx'
+            
             compromissadas_antigo = pd.read_excel(caminho_compromissadas)
 
             if compromissadas is not None:
@@ -85,7 +87,7 @@ with col1:
 
 
                 estruturadas = st.file_uploader(f'Upload Arquivos Estruturadas')
-                caminho_estruturadas = 'dir/estruturadas/estruturadas.xlsx'
+                
                 estruturadas_antigo = pd.read_excel(caminho_estruturadas)
 
                 if estruturadas is not None:
@@ -95,11 +97,15 @@ with col1:
                     estruturadas['Data Posição'] = estruturadas['Data Posição'].fillna(check_data)
                     estruturadas['Cod A'] = estruturadas['Cod A'].str[1:]
                     estruturadas = estruturadas.drop(estruturadas.tail(3).index)
-                    estruturadas = estruturadas[estruturadas['Status da Operação'] == 'Totalmente executado']
+                    estruturadas = estruturadas[
+                                                (estruturadas['Status da Operação'] == 'Totalmente executado') | 
+                                                (estruturadas['Status da Operação'] == 'Parcialmente executado')
+                                            ]
+
                     
                 
                     estruturadas_concat = pd.concat([estruturadas_antigo, estruturadas])
-
+                    
                 
                     ###salvar os arquivos
                     positivador_concat.to_excel(caminho_positivador, index=False)
@@ -111,6 +117,35 @@ with col1:
     
         else:
             st.info('Positivador já atualizado')
+
+    with st.expander('Deletar Data Específica - Usar caso precise refazer o upload'):
+    
+        
+        positivador_deletar = pd.read_excel(caminho_positivador)
+        compromissadas_deletar = pd.read_excel(caminho_compromissadas)
+        estruturadas_deletar = pd.read_excel(caminho_estruturadas)
+
+        unique_dates = positivador_deletar['Data Posição'].unique()
+
+        # Create a selector for unique dates
+        
+        date_delete = st.selectbox('Select a date to delete:', unique_dates, index = None)
+        
+        if st.button('Deletar data'):
+            positivador_deletar = positivador_deletar[positivador_deletar['Data Posição'] != date_delete]
+            
+            positivador_deletar.to_excel(caminho_positivador, index=False)
+
+            compromissadas_deletar = compromissadas_deletar[compromissadas_deletar['Data Posição'] != date_delete]
+        
+            compromissadas_deletar.to_excel(caminho_compromissadas, index=False)
+            
+            estruturadas_deletar = estruturadas_deletar[estruturadas_deletar['Data Posição'] != date_delete]
+
+            estruturadas_deletar.to_excel(caminho_estruturadas, index=False)
+
+            st.success('Data Deletada!')
+
 
 with col2:
     # Then in your loop where you call save_file_to_hist, pass the selected_date as an argument

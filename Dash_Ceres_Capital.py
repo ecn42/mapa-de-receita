@@ -27,7 +27,7 @@ lista_data_posicao = positivador_antigo['Data Posição'].unique().tolist()
 index_lista = len(lista_data_posicao) - 1
 
 filtro_de_data = st.selectbox('Data do Positivador', lista_data_posicao, index = index_lista)
-
+filtro_de_data_dt = datetime.datetime.strptime(filtro_de_data, "%d/%m/%Y")
 
 final_data, final_data_liq, data_posicao_positivador, final_data_liq_esc = gerar_relatorio_receita(filtro_de_data)
 data_posicao_positivador = filtro_de_data
@@ -106,6 +106,12 @@ with visao_receita_liquida.container():
         col_liq_1, col_liq_2 = st.columns(2)
 
         with col_liq_1:
+            
+            # final_data_liq = final_data_liq.style.format(
+            #     {
+            #         'Comissão Total Líquida' : lambda x: '{:,.1f}'.format(x)
+            #     }
+            # )
             st.dataframe(final_data_liq)
         
         with col_liq_2:
