@@ -169,105 +169,107 @@ with captacao_container.container():
             comissoes = comissoes.loc[assessor]
             comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.xs(assessor, level=1)
 
-        except (TypeError, ValueError, NameError, KeyError):  # Handle potential errors from 'gerar_relatorio_captacao'
-            st.error(f"Erro ao gerar relatório de comissão para o assessor {assessor}.")
+        
 
             
-        if comissoes is not None and isinstance(comissoes, pd.DataFrame):
-           
-            comissoes['Líquido Escritório'] = comissoes['Comissão Escritório Líquida'] - comissoes['Comissão Assessor'] 
+            if comissoes is not None and isinstance(comissoes, pd.DataFrame):
             
-            comissoes_por_produto = comissoes.groupby(['Date', 'Categoria']).sum().reset_index()
+                comissoes['Líquido Escritório'] = comissoes['Comissão Escritório Líquida'] - comissoes['Comissão Assessor'] 
+                
+                comissoes_por_produto = comissoes.groupby(['Date', 'Categoria']).sum().reset_index()
 
-            
-            comissao_por_data = comissoes.groupby('Date').sum().reset_index()
-            comissao_por_data = comissao_por_data.drop('Categoria', axis = 1)
-            comissoes_agrupadas_assessor['Líquido Escritório'] = comissoes_agrupadas_assessor['Comissão Escritório Líquida'] - comissoes_agrupadas_assessor['Comissão Assessor'] 
+                
+                comissao_por_data = comissoes.groupby('Date').sum().reset_index()
+                comissao_por_data = comissao_por_data.drop('Categoria', axis = 1)
+                comissoes_agrupadas_assessor['Líquido Escritório'] = comissoes_agrupadas_assessor['Comissão Escritório Líquida'] - comissoes_agrupadas_assessor['Comissão Assessor'] 
 
-            # Convert 'Date' to string
-            comissao_por_data['Date'] = comissao_por_data['Date'].astype(str)
+                # Convert 'Date' to string
+                comissao_por_data['Date'] = comissao_por_data['Date'].astype(str)
 
-            # Convert 'Date' to datetime
-            comissao_por_data['Date'] = pd.to_datetime(comissao_por_data['Date'], format='%Y%m')
+                # Convert 'Date' to datetime
+                comissao_por_data['Date'] = pd.to_datetime(comissao_por_data['Date'], format='%Y%m')
 
-            with st.expander('Tabelas Comissões'):
-                col1_exp_comissoes, col2_exp_comissoes = st.columns(2)
-                with col1_exp_comissoes:
-                    st.dataframe(comissao_por_data, hide_index = True)
-                with col2_exp_comissoes:
-                    unique_dates_comissao_agrupadas = comissoes_agrupadas_assessor.index.get_level_values(0).unique()
+                with st.expander('Tabelas Comissões'):
+                    col1_exp_comissoes, col2_exp_comissoes = st.columns(2)
+                    with col1_exp_comissoes:
+                        st.dataframe(comissao_por_data, hide_index = True)
+                    with col2_exp_comissoes:
+                        unique_dates_comissao_agrupadas = comissoes_agrupadas_assessor.index.get_level_values(0).unique()
+
+                        # Create a selectbox
+                        selected_date = st.selectbox('Select a date', unique_dates_comissao_agrupadas)
+
+                        # Filter the DataFrame
+                        filtered_df_comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.loc[selected_date]
+
+                        # Display the filtered DataFrame
+                        st.dataframe(filtered_df_comissoes_agrupadas_assessor)
+                    
+                
+                    
+                # Create a figure
+                fig_comissao_mes= go.Figure()
+
+                # Add bar chart for 'PF' and 'PJ'
+                fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Escritório'], name='Bruto XP'))
+                fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Escritório Líquida'], name='Bruto Escritório'))
+                fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Assessor'], name='Líquido Assessor'))
+                fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Líquido Escritório'], name='Líquido Escritório'))
+                # Add line chart for 'Captação'
+                # Get the data of the trace
+
+                # Update layout
+                fig_comissao_mes.update_layout(
+                    title=f'''Comissão
+                    ''',
+                    xaxis=dict(
+                    tickformat="%m/%Y"
+                    ),
+                )
+
+                # Display the plot in Streamlit
+                st.plotly_chart(fig_comissao_mes, use_container_width=True)
+
+                st.subheader('Comissão por Produto')
+                
+                unique_dates_comissao_produto = comissoes_por_produto['Date'].unique()
+                unique_dates_number = len(unique_dates_comissao_produto) - 1
 
                     # Create a selectbox
-                    selected_date = st.selectbox('Select a date', unique_dates_comissao_agrupadas)
+                selected_date_produto = st.selectbox('Selecione a Data', unique_dates_comissao_produto, index = unique_dates_number)
+                col1_comissao_produto, col2_comissao_produto = st.columns(2)
+                with col1_comissao_produto:
 
                     # Filter the DataFrame
-                    filtered_df_comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.loc[selected_date]
+                    filtered_df_comissoes_produto = comissoes_por_produto[comissoes_por_produto['Date'] == selected_date_produto]
 
                     # Display the filtered DataFrame
-                    st.dataframe(filtered_df_comissoes_agrupadas_assessor)
-                
-            
-                
-            # Create a figure
-            fig_comissao_mes= go.Figure()
+                    st.dataframe(filtered_df_comissoes_produto, hide_index = True)
+                    # Calculate the total sum for each column
+                    st.caption('Soma das Comissões no mês')
+                    total_sum = filtered_df_comissoes_produto.sum()
+                    
+                    total_sum = total_sum.drop(['Date', 'Categoria'])
+                    
+                    # Display the total sum for each column
+                    st.dataframe(total_sum)
 
-            # Add bar chart for 'PF' and 'PJ'
-            fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Escritório'], name='Bruto XP'))
-            fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Escritório Líquida'], name='Bruto Escritório'))
-            fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Comissão Assessor'], name='Líquido Assessor'))
-            fig_comissao_mes.add_trace(go.Bar(x=comissao_por_data['Date'], y=comissao_por_data['Líquido Escritório'], name='Líquido Escritório'))
-            # Add line chart for 'Captação'
-            # Get the data of the trace
+                with col2_comissao_produto:
+                    percentage_df = filtered_df_comissoes_produto.copy()
 
-            # Update layout
-            fig_comissao_mes.update_layout(
-                title=f'''Comissão
-                ''',
-                xaxis=dict(
-                tickformat="%m/%Y"
-                ),
-            )
+                    # Loop through each column in the DataFrame
+                    for column in percentage_df.columns:
+                        # Skip the 'Date' and 'Categoria' columns
+                        if column not in ['Date', 'Categoria']:
+                            # Calculate the total sum of the column
+                            total_sum = percentage_df[column].sum()
+                            # Calculate the percentage for each value in the column
+                            percentage_df[column] = percentage_df[column].apply(lambda x: '{:.2f}%'.format((x / total_sum) * 100))
 
-            # Display the plot in Streamlit
-            st.plotly_chart(fig_comissao_mes, use_container_width=True)
+                    # Display the new DataFrame
+                    st.dataframe(percentage_df, hide_index = True)
+            else:
+                st.warning(f"O relatório de comissões passadas para o assessor {assessor} apresentou erros")   
 
-            st.subheader('Comissão por Produto')
-            
-            unique_dates_comissao_produto = comissoes_por_produto['Date'].unique()
-            unique_dates_number = len(unique_dates_comissao_produto) - 1
-
-                # Create a selectbox
-            selected_date_produto = st.selectbox('Selecione a Data', unique_dates_comissao_produto, index = unique_dates_number)
-            col1_comissao_produto, col2_comissao_produto = st.columns(2)
-            with col1_comissao_produto:
-
-                # Filter the DataFrame
-                filtered_df_comissoes_produto = comissoes_por_produto[comissoes_por_produto['Date'] == selected_date_produto]
-
-                # Display the filtered DataFrame
-                st.dataframe(filtered_df_comissoes_produto, hide_index = True)
-                # Calculate the total sum for each column
-                st.caption('Soma das Comissões no mês')
-                total_sum = filtered_df_comissoes_produto.sum()
-                
-                total_sum = total_sum.drop(['Date', 'Categoria'])
-                
-                # Display the total sum for each column
-                st.dataframe(total_sum)
-
-            with col2_comissao_produto:
-                percentage_df = filtered_df_comissoes_produto.copy()
-
-                # Loop through each column in the DataFrame
-                for column in percentage_df.columns:
-                    # Skip the 'Date' and 'Categoria' columns
-                    if column not in ['Date', 'Categoria']:
-                        # Calculate the total sum of the column
-                        total_sum = percentage_df[column].sum()
-                        # Calculate the percentage for each value in the column
-                        percentage_df[column] = percentage_df[column].apply(lambda x: '{:.2f}%'.format((x / total_sum) * 100))
-
-                # Display the new DataFrame
-                st.dataframe(percentage_df, hide_index = True)
-        else:
-            st.warning(f"O relatório de comissões passadas para o assessor {assessor} apresentou erros")   
+        except (TypeError, ValueError, NameError, KeyError):  # Handle potential errors from 'gerar_relatorio_captacao'
+            st.error(f"Erro ao gerar relatório de comissão para o assessor {assessor}.")
