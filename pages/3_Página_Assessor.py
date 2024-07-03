@@ -105,7 +105,7 @@ with captacao_container.container():
 
     try:
         captacao, capt_data, capt_ass, data_posicao_captacao = gerar_relatorio_captacao(assessor)
-    except (TypeError, ValueError, NameError):  # Handle potential errors from 'gerar_relatorio_captacao'
+    except (TypeError, ValueError, NameError, KeyError):  # Handle potential errors from 'gerar_relatorio_captacao'
         st.error(f"Erro ao gerar relatório de captação para o assessor {assessor}.")
 
     # Now, check if 'captacao' is a valid DataFrame
@@ -170,7 +170,7 @@ with captacao_container.container():
             comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.xs(assessor, level=1)
 
         except (TypeError, ValueError, NameError, KeyError):  # Handle potential errors from 'gerar_relatorio_captacao'
-            st.error(f"Erro ao gerar relatório de captação para o assessor {assessor}.")
+            st.error(f"Erro ao gerar relatório de comissão para o assessor {assessor}.")
 
             
         if comissoes is not None and isinstance(comissoes, pd.DataFrame):
