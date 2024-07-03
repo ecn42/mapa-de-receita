@@ -10,14 +10,17 @@ crm = pd.read_excel(crm)
 
 crm = crm.iloc[:, 2:-1]
 crm.columns = ['Conta', 'PL', 'Assessor', 'Tipo']
+
 crm['Assessor'] = crm['Assessor'].str[1:]
 crm['Tipo'] = crm['Tipo'].str[8:]
 pl_by_assessor = crm.groupby(['Assessor', 'Tipo'])['PL'].sum().unstack(fill_value=0)
 pl_by_assessor.columns = ['PL PF', 'PL PJ']
 pl_by_assessor['PL Total'] = pl_by_assessor['PL PF'] + pl_by_assessor['PL PJ']
 
+tipo_by_assessor = crm
+tipo_by_assessor = tipo_by_assessor[tipo_by_assessor['PL'] > 100]
 
-tipo_by_assessor = crm.groupby(['Assessor', 'Tipo']).size().unstack(fill_value=0)
+tipo_by_assessor = tipo_by_assessor.groupby(['Assessor', 'Tipo']).size().unstack(fill_value=0)
 tipo_by_assessor.columns = ['Clientes PF', 'Clientes PJ']
 tipo_by_assessor['Clientes Total'] = tipo_by_assessor['Clientes PF'] + tipo_by_assessor['Clientes PJ']
 
@@ -25,3 +28,36 @@ tipo_by_assessor['Clientes Total'] = tipo_by_assessor['Clientes PF'] + tipo_by_a
 tabela_total = pl_by_assessor.join(tipo_by_assessor, how='left')
 tabela_total['Data'] = data
 st.dataframe(tabela_total)
+
+
+####
+
+# Lidando com as comissões
+# # Assuming you have a DataFrame 'df' with a datetime column 'Date_Time'
+# # and a second table 'comissions' with a datetime column 'Comission_Date'
+
+# # Step 1: Extract month and year
+# df['Month'] = df['Date_Time'].dt.month
+# df['Year'] = df['Date_Time'].dt.year
+
+# # Step 2: Filter 'comissions' table
+# comissions_filtered = comissions[
+#     (comissions['Comission_Date'].dt.month == df['Month'].iloc[0]) &
+#     (comissions['Comission_Date'].dt.year == df['Year'].iloc[0])
+# ]
+
+# # Step 3: Calculate cumulative sum
+# comissions_filtered['Cumulative_Comission'] = comissions_filtered['Comissions'].cumsum()
+
+# # Merge back into the original DataFrame
+# df = pd.merge(df, comissions_filtered[['Comission_Date', 'Cumulative_Comission']],
+#               left_on='Date_Time', right_on='Comission_Date', how='left')
+
+# # Fill missing values (for dates without comissions)
+# df['Cumulative_Comission'].fillna(method='ffill', inplace=True)
+
+# # Drop intermediate columns
+# df.drop(['Month', 'Year', 'Comission_Date'], axis=1, inplace=True)
+
+# # Now 'df' contains the desired 'Cumulative_Comission' column
+# print(df)

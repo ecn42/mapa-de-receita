@@ -169,7 +169,7 @@ with captacao_container.container():
             comissoes = comissoes.loc[assessor]
             comissoes_agrupadas_assessor = comissoes_agrupadas_assessor.xs(assessor, level=1)
 
-        except (TypeError, ValueError, NameError):  # Handle potential errors from 'gerar_relatorio_captacao'
+        except (TypeError, ValueError, NameError, KeyError):  # Handle potential errors from 'gerar_relatorio_captacao'
             st.error(f"Erro ao gerar relatório de captação para o assessor {assessor}.")
 
             
