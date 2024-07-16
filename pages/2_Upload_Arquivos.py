@@ -62,7 +62,7 @@ with col1:
     caminho_compromissadas = 'dir/compromissadas/compromissadas.xlsx'
     caminho_estruturadas = 'dir/estruturadas/estruturadas.xlsx'
 
-    @st.cache_data
+    
     def load_compromissadas(caminho):
         return pd.read_excel(caminho)
     
@@ -76,9 +76,8 @@ with col1:
             
             compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
             
-            @st.cache_data
-            def load_compromissadas(caminho):
-                return pd.read_excel(caminho)
+            
+            
 
             compromissadas_antigo = load_compromissadas(caminho_compromissadas)
 
