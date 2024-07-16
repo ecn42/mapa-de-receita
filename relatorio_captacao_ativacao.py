@@ -16,7 +16,7 @@ def load_data(uploaded_file):
 captacao = 'dir/captacao/captacao.xlsx'
 ativacao = 'dir/positivador/positivador.xlsx'
 
-def gerar_relatorio_captacao(assessor, filtro_data):
+def gerar_relatorio_captacao(assessor):
     if captacao is not None:
     
         ##LIDANDO COM A PLANILHA DO POSITIVADOR
@@ -67,7 +67,7 @@ def gerar_relatorio_captacao(assessor, filtro_data):
         
     return final_data_cpt, final_data_cpt_date, final_data_cpt_assessor, data_posicao_captacao
 
-def gerar_relatorio_evasao(assessor, filtro_data):
+def gerar_relatorio_evasao(assessor):
 
     if ativacao is not None:
         
@@ -115,7 +115,7 @@ def gerar_relatorio_evasao(assessor, filtro_data):
 
         return final_data_atv
     
-def gerar_tabela_evasao(assessor, filtro_data):
+def gerar_tabela_evasao(assessor):
 
     if ativacao is not None:
         
