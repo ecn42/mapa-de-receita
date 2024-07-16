@@ -72,6 +72,7 @@ with col1:
     if positivador is not None:
         positivador = pd.read_excel(positivador, engine='openpyxl')
         check_data = set(positivador['Data Posição']) - set(positivador_antigo['Data Posição'])
+        
         if check_data:
             positivador_concat = pd.concat([positivador_antigo, positivador], axis=0)
             
@@ -120,7 +121,10 @@ with col1:
 
 
                     if st.button('Processar dados compromissadas:'):      
-                        
+                        positivador_concat.to_excel(caminho_positivador, index=False)
+                        st.success(f'Atualizou arquivo para {check_data} no positivador')
+                        time.sleep(2)
+
                         compromissadas_concat.to_excel(caminho_compromissadas, index=False)
                         st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
                         time.sleep(2)
@@ -129,9 +133,7 @@ with col1:
                         st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
                         time.sleep(2)
                     
-                        positivador_concat.to_excel(caminho_positivador, index=False)
-                        st.success(f'Atualizou arquivo para {check_data} no positivador')
-                        time.sleep(2)
+                        
         
         else:
             st.info('Positivador já atualizado')
