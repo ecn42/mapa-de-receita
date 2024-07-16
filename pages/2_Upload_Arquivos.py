@@ -67,65 +67,67 @@ with col1:
         return pd.read_excel(caminho)
     
     positivador_antigo = load_compromissadas(caminho_positivador)
-    if st.button("Processar Dados"):
-        if positivador is not None:
-            positivador = pd.read_excel(positivador)
-            check_data = set(positivador['Data Posição']) - set(positivador_antigo['Data Posição'])
-            if check_data:
-                positivador_concat = pd.concat([positivador_antigo, positivador], axis=0)
+    
+    if positivador is not None:
+        positivador = pd.read_excel(positivador)
+        check_data = set(positivador['Data Posição']) - set(positivador_antigo['Data Posição'])
+        if check_data:
+            positivador_concat = pd.concat([positivador_antigo, positivador], axis=0)
+            
+            compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
+            
+            @st.cache_data
+            def load_compromissadas(caminho):
+                return pd.read_excel(caminho)
+
+            compromissadas_antigo = load_compromissadas(caminho_compromissadas)
+
+            if compromissadas is not None:
+
+                compromissadas = pd.read_excel(compromissadas)
+                check_data = str(check_data)
+                check_data = check_data.replace("{'", "").replace("'}", "")
+                compromissadas['Data Posição'] = None
+                compromissadas['Data Posição'] = compromissadas['Data Posição'].fillna(check_data)
+                compromissadas['Código'] = compromissadas['Código'].str[1:]
+                compromissadas = compromissadas.drop(compromissadas.tail(3).index)
+
+                compromissadas_concat = pd.concat([compromissadas_antigo, compromissadas])
+
+
+                estruturadas = st.file_uploader(f'Upload Arquivos Estruturadas')
                 
-                compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
+                estruturadas_antigo = load_compromissadas(caminho_estruturadas)
+
+                if estruturadas is not None:
+                    
+                    estruturadas = pd.read_excel(estruturadas)
+                    estruturadas['Data Posição'] = None
+                    estruturadas['Data Posição'] = estruturadas['Data Posição'].fillna(check_data)
+                    estruturadas['Cod A'] = estruturadas['Cod A'].str[1:]
+                    estruturadas = estruturadas.drop(estruturadas.tail(3).index)
+                    estruturadas = estruturadas[
+                                                (estruturadas['Status da Operação'] == 'Totalmente executado') | 
+                                                (estruturadas['Status da Operação'] == 'Parcialmente executado')
+                                            ]
+
+                    
                 
-                @st.cache_data
-                def load_compromissadas(caminho):
-                    return pd.read_excel(caminho)
-
-                compromissadas_antigo = load_compromissadas(caminho_compromissadas)
-
-                if compromissadas is not None:
-
-                    compromissadas = pd.read_excel(compromissadas)
-                    check_data = str(check_data)
-                    check_data = check_data.replace("{'", "").replace("'}", "")
-                    compromissadas['Data Posição'] = None
-                    compromissadas['Data Posição'] = compromissadas['Data Posição'].fillna(check_data)
-                    compromissadas['Código'] = compromissadas['Código'].str[1:]
-                    compromissadas = compromissadas.drop(compromissadas.tail(3).index)
-
-                    compromissadas_concat = pd.concat([compromissadas_antigo, compromissadas])
-
-
-                    estruturadas = st.file_uploader(f'Upload Arquivos Estruturadas')
+                    estruturadas_concat = pd.concat([estruturadas_antigo, estruturadas])
                     
-                    estruturadas_antigo = load_compromissadas(caminho_estruturadas)
+                
+                    ###salvar os arquivos
+                    if st.button("Processar Dados"):
 
-                    if estruturadas is not None:
-                        
-                        estruturadas = pd.read_excel(estruturadas)
-                        estruturadas['Data Posição'] = None
-                        estruturadas['Data Posição'] = estruturadas['Data Posição'].fillna(check_data)
-                        estruturadas['Cod A'] = estruturadas['Cod A'].str[1:]
-                        estruturadas = estruturadas.drop(estruturadas.tail(3).index)
-                        estruturadas = estruturadas[
-                                                    (estruturadas['Status da Operação'] == 'Totalmente executado') | 
-                                                    (estruturadas['Status da Operação'] == 'Parcialmente executado')
-                                                ]
-
-                        
-                    
-                        estruturadas_concat = pd.concat([estruturadas_antigo, estruturadas])
-                        
-                    
-                        ###salvar os arquivos
                         positivador_concat.to_excel(caminho_positivador, index=False)
                         st.success(f'Atualizou arquivo para {check_data} no positivador')
                         compromissadas_concat.to_excel(caminho_compromissadas, index=False)
                         st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
                         estruturadas_concat.to_excel(caminho_estruturadas, index=False)
                         st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
-        
-            else:
-                st.info('Positivador já atualizado')
+    
+        else:
+            st.info('Positivador já atualizado')
 
     with st.expander('Deletar Data Específica - Usar caso precise refazer o upload'):
     
