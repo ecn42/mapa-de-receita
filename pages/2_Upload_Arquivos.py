@@ -3,6 +3,7 @@ import os
 import shutil
 from datetime import datetime
 import pandas as pd
+import time
 
 def save_uploadedfile(uploadedfile, upload_dir, new_name):
     # Check if the directory already exists
@@ -122,18 +123,15 @@ with col1:
                         
                         compromissadas_concat.to_excel(caminho_compromissadas, index=False)
                         st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
-
-                        if st.button('Processar dados estruturadas'):
+                        time.sleep(2)
                                 
-                                estruturadas_concat.to_excel(caminho_estruturadas, index=False)
-                                st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
-                                
-                                if st.button("Processar Dados Positivador"):
-
+                        estruturadas_concat.to_excel(caminho_estruturadas, index=False)
+                        st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
+                        time.sleep(2)
                     
-                                    positivador_concat.to_excel(caminho_positivador, index=False)
-                                    st.success(f'Atualizou arquivo para {check_data} no positivador')
-                       
+                        positivador_concat.to_excel(caminho_positivador, index=False)
+                        st.success(f'Atualizou arquivo para {check_data} no positivador')
+                        time.sleep(2)
         
         else:
             st.info('Positivador já atualizado')
