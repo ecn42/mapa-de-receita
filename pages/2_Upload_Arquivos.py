@@ -69,7 +69,7 @@ with col1:
     positivador_antigo = load_compromissadas(caminho_positivador)
     
     if positivador is not None:
-        positivador = pd.read_excel(positivador)
+        positivador = pd.read_excel(positivador, engine='openpyxl')
         check_data = set(positivador['Data Posição']) - set(positivador_antigo['Data Posição'])
         if check_data:
             positivador_concat = pd.concat([positivador_antigo, positivador], axis=0)
@@ -83,7 +83,7 @@ with col1:
 
             if compromissadas is not None:
 
-                compromissadas = pd.read_excel(compromissadas)
+                compromissadas = pd.read_excel(compromissadas, engine='openpyxl')
                 check_data = str(check_data)
                 check_data = check_data.replace("{'", "").replace("'}", "")
                 compromissadas['Data Posição'] = None
@@ -100,7 +100,7 @@ with col1:
 
                 if estruturadas is not None:
                     
-                    estruturadas = pd.read_excel(estruturadas)
+                    estruturadas = pd.read_excel(estruturadas, engine = 'openpyxl')
                     estruturadas['Data Posição'] = None
                     estruturadas['Data Posição'] = estruturadas['Data Posição'].fillna(check_data)
                     estruturadas['Cod A'] = estruturadas['Cod A'].str[1:]
@@ -116,18 +116,24 @@ with col1:
                     
                 
                     ###salvar os arquivos
-                    if st.button("Processar Dados"):
 
-                        try:
-                            positivador_concat.to_excel(caminho_positivador, index=False)
-                            st.success(f'Atualizou arquivo para {check_data} no positivador')
-                            compromissadas_concat.to_excel(caminho_compromissadas, index=False)
-                            st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
-                            estruturadas_concat.to_excel(caminho_estruturadas, index=False)
-                            st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
+
+                    if st.button('Processar dados compromissadas:'):      
                         
-                        except Exception as e:
-                            st.error(f'An error occurred: {str(e)}')
+                        compromissadas_concat.to_excel(caminho_compromissadas, index=False)
+                        st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
+
+                        if st.button('Processar dados estruturadas'):
+                                
+                                estruturadas_concat.to_excel(caminho_estruturadas, index=False)
+                                st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
+                                
+                                if st.button("Processar Dados Positivador"):
+
+                    
+                                    positivador_concat.to_excel(caminho_positivador, index=False)
+                                    st.success(f'Atualizou arquivo para {check_data} no positivador')
+                       
         
         else:
             st.info('Positivador já atualizado')
