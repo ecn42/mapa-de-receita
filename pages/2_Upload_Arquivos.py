@@ -61,7 +61,12 @@ with col1:
     caminho_positivador = 'dir/positivador/positivador.xlsx'
     caminho_compromissadas = 'dir/compromissadas/compromissadas.xlsx'
     caminho_estruturadas = 'dir/estruturadas/estruturadas.xlsx'
-    positivador_antigo = pd.read_excel(caminho_positivador)
+
+    @st.cache_data
+    def load_compromissadas(caminho):
+        return pd.read_excel(caminho)
+    
+    positivador_antigo = load_compromissadas(caminho_positivador)
 
     if positivador is not None:
         positivador = pd.read_excel(positivador)
@@ -72,10 +77,10 @@ with col1:
             compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
             
             @st.cache_data
-            def load_compromissadas():
-                return pd.read_excel(caminho_compromissadas)
+            def load_compromissadas(caminho):
+                return pd.read_excel(caminho)
 
-            compromissadas_antigo = load_compromissadas()
+            compromissadas_antigo = load_compromissadas(caminho_compromissadas)
 
             if compromissadas is not None:
 
@@ -92,7 +97,7 @@ with col1:
 
                 estruturadas = st.file_uploader(f'Upload Arquivos Estruturadas')
                 
-                estruturadas_antigo = pd.read_excel(caminho_estruturadas)
+                estruturadas_antigo = load_compromissadas(caminho_estruturadas)
 
                 if estruturadas is not None:
                     
