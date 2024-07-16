@@ -118,13 +118,17 @@ with col1:
                     ###salvar os arquivos
                     if st.button("Processar Dados"):
 
-                        positivador_concat.to_excel(caminho_positivador, index=False)
-                        st.success(f'Atualizou arquivo para {check_data} no positivador')
-                        compromissadas_concat.to_excel(caminho_compromissadas, index=False)
-                        st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
-                        estruturadas_concat.to_excel(caminho_estruturadas, index=False)
-                        st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
-    
+                        try:
+                            positivador_concat.to_excel(caminho_positivador, index=False)
+                            st.success(f'Atualizou arquivo para {check_data} no positivador')
+                            compromissadas_concat.to_excel(caminho_compromissadas, index=False)
+                            st.success(f'Atualizou arquivo para {check_data} nas compromissadas')
+                            estruturadas_concat.to_excel(caminho_estruturadas, index=False)
+                            st.success(f'Atualizou arquivo para {check_data} nas estruturadas')
+                        
+                        except Exception as e:
+                            st.error(f'An error occurred: {str(e)}')
+        
         else:
             st.info('Positivador já atualizado')
 
