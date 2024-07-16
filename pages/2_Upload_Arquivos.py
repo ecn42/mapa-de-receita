@@ -58,7 +58,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     ###upload e check do positivador
-    positivador = st.file_uploader(f'Upload Arquivo Positivador')
+    
     caminho_positivador = 'dir/positivador/positivador.xlsx'
     caminho_compromissadas = 'dir/compromissadas/compromissadas.xlsx'
     caminho_estruturadas = 'dir/estruturadas/estruturadas.xlsx'
@@ -68,7 +68,7 @@ with col1:
         return pd.read_excel(caminho)
     
     positivador_antigo = load_compromissadas(caminho_positivador)
-    
+    positivador = st.file_uploader(f'Upload Arquivo Positivador')
     if positivador is not None:
         positivador = pd.read_excel(positivador, engine='openpyxl')
         check_data = set(positivador['Data Posição']) - set(positivador_antigo['Data Posição'])
