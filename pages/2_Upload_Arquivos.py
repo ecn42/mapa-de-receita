@@ -71,7 +71,11 @@ with col1:
             
             compromissadas = st.file_uploader(f'Upload Arquivos Compromissadas')
             
-            compromissadas_antigo = pd.read_excel(caminho_compromissadas)
+            @st.cache_data
+            def load_compromissadas():
+                return pd.read_excel(caminho_compromissadas)
+
+            compromissadas_antigo = load_compromissadas()
 
             if compromissadas is not None:
 

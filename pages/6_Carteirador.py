@@ -18,6 +18,11 @@ if arquivo_posicoes:
     arquivo_posicoes.to_excel(caminho_posicoes, index=False)
     st.success(f'Posicoes atualizadas')
 
+with st.expander('Atualizar Carteira Fundamentalista:'):
+    
+    carteira_nova = st.file_uploader('Atualizar Carteira Fundamentalista')
+    if carteira_nova is not None:
+        carteira_nova.to_excel('carteirador/carteira_fundamentalista.xlsx')
 
 # Sample data (replace with your actual DataFrames)
 posicoes = pd.read_excel(caminho_posicoes)

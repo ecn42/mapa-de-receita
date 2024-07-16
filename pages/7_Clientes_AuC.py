@@ -1,8 +1,13 @@
 import pandas as pd
 import streamlit as st
 import datetime
+import json
+from relatorio_captacao_ativacao import gerar_relatorio_captacao, gerar_relatorio_evasao, gerar_tabela_evasao
 
-
+with open('dict_nomes.json', 'r') as f:
+    dict_nomes = json.load(f)
+assessor = None
+captacao, captacao_data, captacao_assessor, data_posicao_captacao = gerar_relatorio_captacao(assessor)
 data = st.date_input('Selecionar Data do Relatório:')
 crm = st.file_uploader('Tabela CRM')
 crm = pd.read_excel(crm)
@@ -27,9 +32,18 @@ tipo_by_assessor['Clientes Total'] = tipo_by_assessor['Clientes PF'] + tipo_by_a
 
 tabela_total = pl_by_assessor.join(tipo_by_assessor, how='left')
 tabela_total['Data'] = data
-st.dataframe(tabela_total)
 
+tabela_total['Nome'] = tabela_total.index.map(dict_nomes)
+captacao_assessor.drop(captacao_assessor.columns[0], axis=1, inplace=True)
+novos_nomes_coluna = ['Captação Total', 'Captação PF', 'Captação PJ']
+captacao_assessor = captacao_assessor.set_axis(novos_nomes_coluna, axis=1)
+st.table(captacao_assessor)
 
+st.dataframe(tabela_total, column_order=['Data', 'Nome', 'PL PF', 'PL PJ', 'PL Total', 'Clientes PF', 'Clientes PJ', 'Clientes Total'])
+joined_df = pd.concat([captacao_assessor, tabela_total], axis=1)
+joined_df = joined_df.fillna(0)
+st.dataframe(joined_df, column_order=['Data', 'Nome', 'Captação Total', 'Captação PF', 'Captação PJ', 'PL PF', 'PL PJ', 'PL Total', 'Clientes PF', 'Clientes PJ', 'Clientes Total'])
+joined_df.to_excel('relatorio_rafa.xlsx')
 ####
 
 # Lidando com as comissões
